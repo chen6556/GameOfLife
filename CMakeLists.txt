@@ -47,25 +47,3 @@ qt_finalize_executable(GameOfLife)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
-
-install(CODE [[
-file(GET_RUNTIME_DEPENDENCIES
-    RESOLVED_DEPENDENCIES_VAR RESOLVED_DEPS
-    EXECUTABLES  $<TARGET_FILE:GameOfLife>
-    DIRECTORIES "D:/Applications/Qt/6.5.1/msvc2019_64/bin"
-    PRE_INCLUDE_REGEXES $<TARGET_FILE_DIR:GameOfLife>
-    PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
-    POST_INCLUDE_REGEXES $<TARGET_FILE_DIR:GameOfLife>
-    POST_EXCLUDE_REGEXES "system32"
-)
-foreach(DEP_LIB ${RESOLVED_DEPS})
-    file(INSTALL ${DEP_LIB} DESTINATION D:/Code/GameOfLife/install)
-endforeach()
-]])
-
-install(TARGETS GameOfLife
-        LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/install  # 动态库安装路径
-        ARCHIVE DESTINATION ${PROJECT_SOURCE_DIR}/install  # 静态库安装路径
-        RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/install  # 可执行文件安装路径
-        PUBLIC_HEADER DESTINATION ${PROJECT_SOURCE_DIR}/install  # 头文件安装路径
-        )
