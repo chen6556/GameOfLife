@@ -351,7 +351,7 @@
   </connection>
   <connection>
    <sender>horizontalSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>change_speed(int)</slot>
    <hints>
