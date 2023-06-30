@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>819</width>
-    <height>663</height>
+    <height>691</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QWidget" name="canvas" native="true">
       <property name="sizePolicy">
@@ -63,6 +63,98 @@
       </property>
      </widget>
     </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>48</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>48</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Speed:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_speed">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>2</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="horizontalSlider">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>50</number>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -81,6 +173,7 @@
     <addaction name="action_play"/>
     <addaction name="action_clear"/>
     <addaction name="action_protect"/>
+    <addaction name="action_fill"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -89,17 +182,8 @@
     <addaction name="action_open"/>
     <addaction name="action_save"/>
    </widget>
-   <widget class="QMenu" name="menuSpeed">
-    <property name="title">
-     <string>Speed</string>
-    </property>
-    <addaction name="action2"/>
-    <addaction name="action5"/>
-    <addaction name="action8"/>
-   </widget>
    <addaction name="menuPlay"/>
    <addaction name="menuFile"/>
-   <addaction name="menuSpeed"/>
   </widget>
   <widget class="QStatusBar" name="status_bar">
    <property name="sizeGripEnabled">
@@ -159,6 +243,11 @@
    </property>
    <property name="text">
     <string>8</string>
+   </property>
+  </action>
+  <action name="action_fill">
+   <property name="text">
+    <string>Fill</string>
    </property>
   </action>
  </widget>
@@ -245,10 +334,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>action2</sender>
+   <sender>action_fill</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>change_speed()</slot>
+   <slot>fill()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -261,34 +350,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>action5</sender>
-   <signal>triggered()</signal>
+   <sender>horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>change_speed()</slot>
+   <slot>change_speed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>89</x>
+     <y>166</y>
     </hint>
     <hint type="destinationlabel">
      <x>409</x>
-     <y>331</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>action8</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>change_speed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>409</x>
-     <y>331</y>
+     <y>345</y>
     </hint>
    </hints>
   </connection>
@@ -299,6 +372,7 @@
   <slot>protect()</slot>
   <slot>read()</slot>
   <slot>write()</slot>
-  <slot>change_speed()</slot>
+  <slot>change_speed(int)</slot>
+  <slot>fill()</slot>
  </slots>
 </ui>
