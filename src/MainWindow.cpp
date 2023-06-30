@@ -27,7 +27,6 @@ void MainWindow::init()
     connect(&_timer, &QTimer::timeout, this, &MainWindow::revolution);
     ui->canvas->installEventFilter(this);
 
-    ui->status_bar->setSizeGripEnabled(false);
     _info = new QLabel(this);
     ui->status_bar->addPermanentWidget(_info);
 }
@@ -349,74 +348,33 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
     
     const int w = ui->canvas->width(), h = ui->canvas->height();
+    const int base_w = _checkerboard.back().size(), base_h = _checkerboard.size();
     int cols = _checkerboard.empty() ? w / 8 : _checkerboard.back().size();
     if (_checkerboard.size() > h / 8)
     {
-        for (int i = _checkerboard.size(); i > h / 8; --i)
-        {
-            if (i % 2 == 0)
-            {
-                _checkerboard.pop_back();
-            }
-            else
-            {
-                _checkerboard.erase(_checkerboard.begin());
-            }
-        }
+        _checkerboard.erase(_checkerboard.end() - (base_h - (h / 8)) / 2, _checkerboard.end());
+        _checkerboard.erase(_checkerboard.begin(), _checkerboard.begin() + (base_h - (h / 8)) / 2);
     }
     else
     {
-        for (int i = _checkerboard.size(); i < h / 8; ++i)
-        {
-            if (i % 2 == 0)
-            {
-                _checkerboard.push_back(std::vector<bool>(cols, false));
-            }
-            else
-            {
-                _checkerboard.insert(_checkerboard.begin(), std::vector<bool>(cols, false));
-            }
-        }
+        _checkerboard.insert(_checkerboard.begin(), ((h / 8) - base_h) / 2, std::vector<bool>(cols, false));
+        _checkerboard.insert(_checkerboard.end(), ((h / 8) - base_h) / 2, std::vector<bool>(cols, false));
     }
 
     if (_checkerboard.back().size() > w / 8)
     {
-        for (int i = _checkerboard.back().size(); i > w / 8; --i)
+        for (std::vector<bool> &row : _checkerboard)
         {
-            if (i % 2 == 0)
-            {
-                for (std::vector<bool> &row : _checkerboard)
-                {
-                    row.pop_back();
-                }
-            }
-            else
-            {
-                for (std::vector<bool> &row : _checkerboard)
-                {
-                    row.erase(row.begin());
-                }
-            }
+            row.erase(row.begin(), row.begin() + (base_w - (w / 8)) / 2);
+            row.erase(row.end() - (base_w - (w / 8)) / 2, row.end());
         }
     }
     else
     {
-        for (int i = _checkerboard.back().size(); i < w / 8; ++i)
+        for (std::vector<bool> &row : _checkerboard)
         {
-            if (i % 2 == 0)
-            {
-                for (std::vector<bool> &row : _checkerboard)
-                {
-                    row.push_back(false);
-                }
-            }
-            else
-            {
-                for (std::vector<bool> &row : _checkerboard)
-                {
-                    row.insert(row.begin(), false);
-                }
-            }
+            row.insert(row.begin(), ((w / 8) - base_w) / 2, false);
+            row.insert(row.end(), ((w / 8) - base_w) / 2, false);
         }
     }
 
