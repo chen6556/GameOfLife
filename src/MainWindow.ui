@@ -89,8 +89,17 @@
     <addaction name="action_open"/>
     <addaction name="action_save"/>
    </widget>
+   <widget class="QMenu" name="menuSpeed">
+    <property name="title">
+     <string>Speed</string>
+    </property>
+    <addaction name="action2"/>
+    <addaction name="action5"/>
+    <addaction name="action8"/>
+   </widget>
    <addaction name="menuPlay"/>
    <addaction name="menuFile"/>
+   <addaction name="menuSpeed"/>
   </widget>
   <widget class="QStatusBar" name="status_bar">
    <property name="sizeGripEnabled">
@@ -123,6 +132,33 @@
   <action name="action_save">
    <property name="text">
     <string>Save</string>
+   </property>
+  </action>
+  <action name="action2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="action5">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="action8">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>8</string>
    </property>
   </action>
  </widget>
@@ -208,6 +244,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action2</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>change_speed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action5</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>change_speed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action8</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>change_speed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>play()</slot>
@@ -215,5 +299,6 @@
   <slot>protect()</slot>
   <slot>read()</slot>
   <slot>write()</slot>
+  <slot>change_speed()</slot>
  </slots>
 </ui>

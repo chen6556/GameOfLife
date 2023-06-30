@@ -23,6 +23,7 @@ private:
 
     QTimer _timer;
     size_t _count = 0;
+    int _speed = 2;
     QLabel *_info = nullptr;
 
 private:
@@ -42,6 +43,8 @@ private slots:
     void read();
 
     void write();
+
+    void change_speed();
 
 protected:
     void mousePressEvent(QMouseEvent *event);

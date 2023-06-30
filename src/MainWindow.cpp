@@ -94,6 +94,35 @@ void MainWindow::write()
     }
 }
 
+void MainWindow::change_speed()
+{
+    const QAction *action = qobject_cast<QAction*>(sender());
+    switch (std::atoi(action->objectName().toStdString().substr(6).c_str()))
+    {
+    case 2:
+        _speed = 2;
+        ui->action5->setChecked(false);
+        ui->action8->setChecked(false);
+        break;
+    case 5:
+        _speed = 5;
+        ui->action2->setChecked(false);
+        ui->action8->setChecked(false);
+        break;
+    case 8:
+        _speed = 8;
+        ui->action2->setChecked(false);
+        ui->action5->setChecked(false);
+        break;
+    default:
+        break;
+    }
+    if (_timer.isActive())
+    {
+        _timer.start(1000 / _speed);
+    }
+}
+
 
 
 void MainWindow::play()
@@ -101,7 +130,7 @@ void MainWindow::play()
     _playing = !_playing;
     if (_playing)
     {
-        _timer.start(500);
+        _timer.start(1000 / _speed);
         _info->clear();
     }
     else
