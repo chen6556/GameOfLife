@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <Qstring>
 #include <random>
+#include <thread>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -17,13 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (_refresh_thread != nullptr)
-    {
-        _refresh_cache = false;
-        _mutex.lock();
-        delete _refresh_thread;
-        _mutex.unlock();
-    }
     delete ui;
     delete _info;
 }
@@ -137,9 +131,6 @@ void MainWindow::play()
     {
         _timer.start(1000 / _speed);
         _info->clear();
-        _refresh_cache = true;
-        _refresh_thread = new std::thread(std::mem_fn(&MainWindow::refresh_cache), this);
-        _refresh_thread->detach();
     }
     else
     {
@@ -150,21 +141,12 @@ void MainWindow::play()
 
 void MainWindow::clear()
 {
-    _refresh_cache = false;
     _timer.stop();
     _playing = false;
     _count = 0;
     _checkerboard.assign(ui->canvas->height() / 8, std::vector<bool>(ui->canvas->width() / 8, false));
     _info->clear();
     ui->canvas->update();
-    _cache.clear();
-    if (_refresh_thread != nullptr)
-    {
-        _mutex.lock();
-        delete _refresh_thread;
-        _mutex.unlock();
-        _refresh_thread = nullptr;
-    }
 }
 
 void MainWindow::protect()
@@ -172,9 +154,10 @@ void MainWindow::protect()
     _paintable = !ui->action_protect->isChecked();
 }
 
-void MainWindow::refresh_cache_subfunc(std::tuple<std::vector<std::vector<bool>> *, const int, const int> args)
+void MainWindow::revolution_subfunc(std::tuple<std::vector<std::vector<bool>> *, const int, const int> args)
 {
     int count;
+    const int rows = _checkerboard.size();
     for (int i = std::get<1>(args), row = std::get<2>(args), col = _checkerboard.back().size(); i < row; ++i)
     {   
         for (int j = 0; j < col; ++j)
@@ -182,118 +165,118 @@ void MainWindow::refresh_cache_subfunc(std::tuple<std::vector<std::vector<bool>>
             count = 0;
             if (i > 0)
             {
-                if (j > 0 && _cache.back()[i - 1][j - 1])
+                if (j > 0 && _checkerboard[i - 1][j - 1])
                 {
                     ++count;
                 }
-                else if (j == 0 && _cache.back()[i - 1].back())
+                else if (j == 0 && _checkerboard[i - 1].back())
                 {
                     ++count;
                 }
-                if (_cache.back()[i - 1][j])
+                if (_checkerboard[i - 1][j])
                 {
                     ++count;
                 }
-                if (j < col - 1 && _cache.back()[i - 1][j + 1])
+                if (j < col - 1 && _checkerboard[i - 1][j + 1])
                 {
                     ++count;
                 }
-                else if (j == col - 1 && _cache.back()[i - 1].front())
-                {
-                    ++count;
-                }
-            }
-            else
-            {
-                if (j > 0 && _cache.back().back()[j - 1])
-                {
-                    ++count;
-                }
-                else if (j == 0 && _cache.back().back().back())
-                {
-                    ++count;
-                }
-                if (_cache.back().back()[j])
-                {
-                    ++count;
-                }
-                if (j < col - 1 && _cache.back().back()[j + 1])
-                {
-                    ++count;
-                }
-                else if (j == col - 1 && _cache.back().back().front())
-                {
-                    ++count;
-                }
-            }
-            if (j > 0 && _cache.back()[i][j - 1])
-            {
-                ++count;
-            }
-            else if (j == 0 && _cache.back()[i].back())
-            {
-                ++count;
-            }
-            if (j < col - 1 && _cache.back()[i][j + 1])
-            {
-                ++count;
-            }
-            else if (j == col - 1 && _cache.back()[i].front())
-            {
-                ++count;
-            }
-            if (i < row - 1)
-            {
-                if (j > 0 && _cache.back()[i + 1][j - 1])
-                {
-                    ++count;
-                }
-                else if (j == 0 && _cache.back()[i + 1].back())
-                {
-                    ++count;
-                }
-                if (_cache.back()[i + 1][j])
-                {
-                    ++count;
-                }
-                if (j < col - 1 && _cache.back()[i + 1][j + 1])
-                {
-                    ++count;
-                }
-                else if (j == col - 1 && _cache.back()[i + 1].front())
+                else if (j == col - 1 && _checkerboard[i - 1].front())
                 {
                     ++count;
                 }
             }
             else
             {
-                if (j > 0 && _cache.back().front()[j - 1])
+                if (j > 0 && _checkerboard.back()[j - 1])
                 {
                     ++count;
                 }
-                else if (j == 0 && _cache.back().front().back())
+                else if (j == 0 && _checkerboard.back().back())
                 {
                     ++count;
                 }
-                if (_cache.back().front()[j])
+                if (_checkerboard.back()[j])
                 {
                     ++count;
                 }
-                if (j < col - 1 && _cache.back().front()[j + 1])
+                if (j < col - 1 && _checkerboard.back()[j + 1])
                 {
                     ++count;
                 }
-                else if (j == col - 1 && _cache.back().front().front())
+                else if (j == col - 1 && _checkerboard.back().front())
+                {
+                    ++count;
+                }
+            }
+            if (j > 0 && _checkerboard[i][j - 1])
+            {
+                ++count;
+            }
+            else if (j == 0 && _checkerboard[i].back())
+            {
+                ++count;
+            }
+            if (j < col - 1 && _checkerboard[i][j + 1])
+            {
+                ++count;
+            }
+            else if (j == col - 1 && _checkerboard[i].front())
+            {
+                ++count;
+            }
+            if (i < rows - 1)
+            {
+                if (j > 0 && _checkerboard[i + 1][j - 1])
+                {
+                    ++count;
+                }
+                else if (j == 0 && _checkerboard[i + 1].back())
+                {
+                    ++count;
+                }
+                if (_checkerboard[i + 1][j])
+                {
+                    ++count;
+                }
+                if (j < col - 1 && _checkerboard[i + 1][j + 1])
+                {
+                    ++count;
+                }
+                else if (j == col - 1 && _checkerboard[i + 1].front())
+                {
+                    ++count;
+                }
+            }
+            else
+            {
+                if (j > 0 && _checkerboard.front()[j - 1])
+                {
+                    ++count;
+                }
+                else if (j == 0 && _checkerboard.front().back())
+                {
+                    ++count;
+                }
+                if (_checkerboard.front()[j])
+                {
+                    ++count;
+                }
+                if (j < col - 1 && _checkerboard.front()[j + 1])
+                {
+                    ++count;
+                }
+                else if (j == col - 1 && _checkerboard.front().front())
                 {
                     ++count;
                 }
             }
 
-            if (_cache.back()[i][j] && (count <= 1 || count >= 4))
+            if (_checkerboard[i][j] && (count <= 1 || count >= 4))
             {
                 (*std::get<0>(args))[i][j] = false;
             }
-            else if (!_cache.back()[i][j] && count == 3)
+            else if (!_checkerboard[i][j] && count == 3)
             {
                 (*std::get<0>(args))[i][j] = true;
             }
@@ -301,67 +284,27 @@ void MainWindow::refresh_cache_subfunc(std::tuple<std::vector<std::vector<bool>>
     }
 }
 
-void MainWindow::refresh_cache()
+void MainWindow::revolution()
 {
-    bool flag;
     std::vector<std::thread> threads;
     const int cpus = std::thread::hardware_concurrency();
     const int rows = _checkerboard.size();
     const int step = rows / cpus;
-    while (_refresh_cache)
+
+    std::vector<std::vector<bool>> checkerboard(_checkerboard);
+    for (int i = 1; i < cpus; ++i)
     {
-        if (_cache.size() > 30)
-        {
-            continue;
-        }
-        std::vector<std::vector<bool>> checkerboard(_checkerboard);
-
-        _mutex.lock();
-        if (_cache.empty())
-        {
-            _cache.push_back(_checkerboard);
-            flag = true;
-        }
-        else
-        {
-            flag = false;
-        }
-        
-        for (int i = 1; i < cpus; ++i)
-        {
-            threads.push_back(std::thread(std::mem_fn(&MainWindow::refresh_cache_subfunc), this,
-                std::make_tuple(&checkerboard, step * (i - 1), step * i)));
-        }
-        threads.push_back(std::thread(std::mem_fn(&MainWindow::refresh_cache_subfunc), this,
-                std::make_tuple(&checkerboard, step * (cpus - 1), rows)));
-        for (std::thread &t : threads)
-        {
-            t.join();
-        }
-        
-        if (flag)
-        {
-            _cache.pop_front();
-        }
-
-        _cache.push_back(checkerboard);
-        _mutex.unlock();
-
-        threads.clear();
+        threads.push_back(std::thread(std::mem_fn(&MainWindow::revolution_subfunc), this,
+            std::make_tuple(&checkerboard, step * (i - 1), step * i)));
     }
-}
-
-void MainWindow::revolution()
-{
-    if (_cache.empty())
+    threads.push_back(std::thread(std::mem_fn(&MainWindow::revolution_subfunc), this,
+            std::make_tuple(&checkerboard, step * (cpus - 1), rows)));
+    for (std::thread &t : threads)
     {
-        return;
+        t.join();
     }
-
-    _checkerboard.assign(_cache.front().cbegin(), _cache.front().cend());
-    _mutex.lock();
-    _cache.pop_front();
-    _mutex.unlock();
+  
+    _checkerboard.assign(checkerboard.cbegin(), checkerboard.cend());
     ui->status_bar->showMessage(QString::fromStdString(std::string("Revolution times : ").append(std::to_string(++_count))));
     ui->canvas->update();
 
